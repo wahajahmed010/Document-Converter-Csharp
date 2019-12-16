@@ -1,0 +1,12 @@
+D:\Document Converter\Document converter\Document converter\bin\Debug\Document converter.exe
+D:\Document Converter\Document converter\Document converter\bin\Debug\Document converter.pdb
+D:\Document Converter\Document converter\Document converter\bin\Debug\SautinSoft.PdfFocus.dll
+D:\Document Converter\Document converter\Document converter\obj\x86\Debug\Document_converter.Form1.resources
+D:\Document Converter\Document converter\Document converter\obj\x86\Debug\Document_converter.Properties.Resources.resources
+D:\Document Converter\Document converter\Document converter\obj\x86\Debug\Document converter.csproj.GenerateResource.Cache
+D:\Document Converter\Document converter\Document converter\obj\x86\Debug\Document converter.exe
+D:\Document Converter\Document converter\Document converter\obj\x86\Debug\Document converter.pdb
+D:\Document Converter\Document converter\Document converter\obj\x86\Debug\Document converter.csprojResolveAssemblyReference.cache
+D:\Document Converter\Document converter\Document converter\obj\x86\Debug\Document converter.csproj.ResolveComReference.cache
+D:\Document Converter\Document converter\Document converter\obj\x86\Debug\Document_converter.Form2.resources
+D:\Document Converter\Document converter\Document converter\obj\x86\Debug\Document_converter.Form3.resources
