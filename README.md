@@ -146,10 +146,3 @@ dotnet build --configuration Release
 ## License
 
 Student project — created while learning C# and .NET
-
-## Credits
-
-Enhanced using the [OpenClaw Hermes Adaptation](https://github.com/wahajahmed010/openclaw-hermes-adaptation) auto-skill pipeline.
-
-Council: Mnemosyne, Sibyl, Fabricator  
-Enhancement Agents: Enhancer-Critical, Enhancer-High
