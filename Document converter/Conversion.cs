@@ -1,113 +1,64 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
+using System;
+using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.IO;
-using System.Runtime.InteropServices.ComTypes;
-
 
 namespace Document_converter
 {
     class Conversion
     {
-        public void fileconvert(string filepath, string savepath, string openwali, string savewali, string filname, string sfilename)
+        public async Task ConvertAsync(string filepath, string savepath, string openwali, string savewali,
+            IProgress<double> progress, CancellationToken token)
         {
+            token.ThrowIfCancellationRequested();
 
-            //Checking the files that are to be converted.
-
-            
-            //int a = openFileDialog3.FilterIndex;
-            //int b = saveFileDialog3.FilterIndex;
-
-            // MessageBox.Show("Error: Same extension selected");
-
-            if (openwali == ".doc") //.doc
+            await Task.Run(() =>
             {
-                if (savewali == ".docx") //.docx
+                // Handle DOC to PDF/TXT
+                if (openwali == ".doc")
                 {
-                    MessageBox.Show("Error: Same file extension");
+                    if (savewali == ".pdf")
+                    {
+                        var converter = new DocToPdf();
+                        converter.Convert(filepath, savepath, progress, token);
+                    }
+                    else if (savewali == ".txt")
+                    {
+                        var converter = new DocToTxt();
+                        converter.Convert(filepath, savepath, progress, token);
+                    }
                 }
-                else if (savewali == ".doc") //.doc
+                // Handle DOCX to PDF/TXT
+                else if (openwali == ".docx")
                 {
-                    MessageBox.Show("Error: Same file extension");
+                    if (savewali == ".pdf")
+                    {
+                        var converter = new DocToPdf();
+                        converter.Convert(filepath, savepath, progress, token);
+                    }
+                    else if (savewali == ".txt")
+                    {
+                        var converter = new DocToTxt();
+                        converter.Convert(filepath, savepath, progress, token);
+                    }
                 }
-                else if (savewali == ".pdf") //.pdf
+                // Handle PDF to DOCX/DOC/TXT
+                else if (openwali == ".pdf")
                 {
-
-                    DocToPdf d2p = new DocToPdf();
-                    d2p.Convertor(filepath, savepath);
-
-                }
-                else if (savewali == ".txt") //.txt
-                {
-                    DocToTxt DtT = new DocToTxt();
-                    DtT.Converter(filepath, savepath);
-                    //MessageBox.Show("Abhi rukja ye nhi hoa");
-                }
-
-
-
-            }
-            else if (openwali == ".docx") //.docx
-            {
-                if (savewali == ".docx") //.docx
-                {
-                    MessageBox.Show("Error: Same file extension");
-                }
-                else if (savewali == ".doc") //.doc
-                {
-                    MessageBox.Show("Error: Same file extension");
-                }
-                else if (savewali == ".pdf") //.pdf
-                {
-
-                    DocToPdf d2p = new DocToPdf();
-                    d2p.Convertor(filepath, savepath);
-
-                }
-                else if (savewali == ".txt") //.txt
-                {
-                    DocToTxt DtT = new DocToTxt();
-                    DtT.Converter(filepath, savepath);
-                    //MessageBox.Show("Abhi rukja bhai");
+                    if (savewali == ".docx" || savewali == ".doc")
+                    {
+                        var converter = new PdfToWord();
+                        converter.Convert(filepath, savepath, progress, token);
+                    }
+                    else if (savewali == ".txt")
+                    {
+                        var converter = new PdfToTxt();
+                        converter.Convert(filepath, progress, token);
+                    }
                 }
 
-            }
-            else if (openwali == ".pdf") //.pdf
-            {
-                if (savewali == ".docx") //.docx
-                {
-                    PdfToWord ptw = new PdfToWord();
-                    ptw.Converter(filepath, savepath);
-
-                }
-                else if (savewali == ".doc") //.doc
-                {
-                    PdfToWord ptw = new PdfToWord();
-                    ptw.Converter(filepath, savepath);
-                }
-                else if (savewali == ".pdf") //.pdf
-                {
-                    MessageBox.Show("Error: Same file extension");
-
-                }
-                else if (savewali == ".txt") //.txt
-                {
-                    PdfToTxt PtT = new PdfToTxt();
-                    PtT.Converter(filepath);
-                }
-
-            }
-            
-                
-
-
+                token.ThrowIfCancellationRequested();
+                progress?.Report(1.0);
+            }, token);
         }
     }
 }

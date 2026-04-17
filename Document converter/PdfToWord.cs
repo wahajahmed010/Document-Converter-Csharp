@@ -1,41 +1,42 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
-using System.Windows.Forms;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Document_converter
 {
-    class PdfToWord : Conversion
+    class PdfToWord
     {
-        public void Converter(string fopen, string fsave)
+        public void Convert(string fopen, string fsave, IProgress<double> progress, CancellationToken token)
         {
-            SautinSoft.PdfFocus f = new SautinSoft.PdfFocus();
+            Logger.Instance.Info($"Converting PDF to Word: {fopen} -> {fsave}");
+
+            token.ThrowIfCancellationRequested();
+            progress?.Report(0.1);
+
+            var f = new SautinSoft.PdfFocus();
             f.OpenPdf(fopen);
-            //f.ToWord(textBox2.Text);
+
+            token.ThrowIfCancellationRequested();
 
             if (f.PageCount > 0)
             {
-                // You may choose output format between Docx and Rtf.
+                token.ThrowIfCancellationRequested();
+                progress?.Report(0.5);
+
                 f.WordOptions.Format = SautinSoft.PdfFocus.CWordOptions.eWordDocument.Docx;
-
                 int result = f.ToWord(fsave);
-                
 
-                // Show the resulting Word document.
+                token.ThrowIfCancellationRequested();
+                progress?.Report(0.9);
+
                 if (result == 0)
                 {
-                    //Form1 main = new Form1();
-                   
-                  //  main.popup();
-
-                    //System.Diagnostics.Process.Start(textBox2.Text);
-                    MessageBox.Show("Conversion is Completed!");
+                    Logger.Instance.Info("PDF to Word conversion completed successfully");
                 }
-
-                
-
+                else
+                {
+                    Logger.Instance.Error($"PDF to Word conversion failed with result: {result}", null);
+                }
             }
         }
     }

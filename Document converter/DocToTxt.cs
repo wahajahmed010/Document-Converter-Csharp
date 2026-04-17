@@ -1,64 +1,49 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+using System;
 using System.IO;
-using System.Runtime.InteropServices.ComTypes;
+using System.Threading;
+using System.Threading.Tasks;
 using Word = Microsoft.Office.Interop.Word;
-
 
 namespace Document_converter
 {
-    class DocToTxt : Conversion
+    class DocToTxt
     {
-        //Microsoft.Office.Interop.Word.Document wordDoc { get; set; }
-        public void Converter(string docPath, string savePath)
+        public void Convert(string docPath, string savePath, IProgress<double> progress, CancellationToken token)
         {
-            
+            Logger.Instance.Info($"Converting DOC to TXT: {docPath} -> {savePath}");
+
+            token.ThrowIfCancellationRequested();
+            progress?.Report(0.1);
+
             object path = docPath;
-            string txtPath = savePath;
             Word.Application app = new Word.Application();
-            Word.Document doc;
+            Word.Document doc = null;
             object missing = Type.Missing;
             object readOnly = true;
+
             try
             {
-                doc = app.Documents.Open(ref path, ref missing, ref readOnly, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing, ref missing);
+                token.ThrowIfCancellationRequested();
+                doc = app.Documents.Open(ref path, ref missing, ref readOnly, ref missing, ref missing,
+                    ref missing, ref missing, ref missing, ref missing, ref missing, ref missing,
+                    ref missing, ref missing, ref missing, ref missing, ref missing);
+
+                token.ThrowIfCancellationRequested();
+                progress?.Report(0.5);
+
                 string text = doc.Content.Text;
-                File.WriteAllText(txtPath, text);
-               
-            }
-            catch
-            {
-                MessageBox.Show("An error occured. Please check the file path to your word document, and whether the word document is valid.");
+                File.WriteAllText(savePath, text);
+
+                token.ThrowIfCancellationRequested();
+                progress?.Report(0.9);
+
+                Logger.Instance.Info("DOC to TXT conversion completed successfully");
             }
             finally
             {
                 object saveChanges = Word.WdSaveOptions.wdDoNotSaveChanges;
                 app.Quit(ref saveChanges, ref missing, ref missing);
             }
-
-
-            MessageBox.Show("Conversion is Completed!");
-            
-            
-            
-            
-            
-            
-            
-       
-
-
-            
-
-
         }
     }
 }

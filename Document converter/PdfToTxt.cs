@@ -1,36 +1,42 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System;
 using System.IO;
-using System.Windows.Forms;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Document_converter
 {
-    class PdfToTxt : Conversion
+    class PdfToTxt
     {
-        public void Converter(string path)
+        public void Convert(string path, IProgress<double> progress, CancellationToken token)
         {
-            string pdfFile = path; 
+            Logger.Instance.Info($"Converting PDF to TXT: {path}");
+
+            token.ThrowIfCancellationRequested();
+            progress?.Report(0.1);
+
+            string pdfFile = path;
             string textFile = Path.ChangeExtension(pdfFile, ".txt");
 
-            //Convert PDF file to Text file
-            SautinSoft.PdfFocus f = new SautinSoft.PdfFocus();
-            //this property is necessary only for registered version
-            //f.Serial = "XXXXXXXXXXX";
-
+            var f = new SautinSoft.PdfFocus();
             f.OpenPdf(pdfFile);
+
+            token.ThrowIfCancellationRequested();
+            progress?.Report(0.5);
 
             if (f.PageCount > 0)
             {
                 int result = f.ToText(textFile);
 
-                //Show Text document
+                token.ThrowIfCancellationRequested();
+                progress?.Report(0.9);
+
                 if (result == 0)
                 {
-                   // System.Diagnostics.Process.Start(textFile);
-                    MessageBox.Show("Conversion is Completed!");
-                    
+                    Logger.Instance.Info("PDF to TXT conversion completed successfully");
+                }
+                else
+                {
+                    Logger.Instance.Error($"PDF to TXT conversion failed with result: {result}", null);
                 }
             }
         }
