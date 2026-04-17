@@ -33,9 +33,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SautinSoft.PdfFocus">
-      <HintPath>..\..\..\PDF conversion API\PDF Focus .Net Trial (6.0.11.7)\Bin\Net 4.0\SautinSoft.PdfFocus.dll</HintPath>
-    </Reference>
+    <PackageReference Include="SautinSoft.PdfFocus" Version="6.0.11.7" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />

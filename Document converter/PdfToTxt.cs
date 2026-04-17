@@ -1,43 +1,89 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.IO;
 using System.Threading;
-using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Document_converter
 {
-    class PdfToTxt
+    class PdfToTxt : Conversion, IDisposable
     {
-        public void Convert(string path, IProgress<double> progress, CancellationToken token)
+        private SautinSoft.PdfFocus _pdfFocus;
+        private bool _disposed;
+
+        public void Convert(string fopen, string fsave, IProgress<double> progress, CancellationToken token)
         {
-            Logger.Instance.Info($"Converting PDF to TXT: {path}");
+            if (string.IsNullOrWhiteSpace(fopen))
+                throw new ArgumentException("Input path cannot be empty", nameof(fopen));
+            if (!File.Exists(fopen))
+                throw new FileNotFoundException("Input file not found", fopen);
+            if (string.IsNullOrWhiteSpace(fsave))
+                throw new ArgumentException("Output path cannot be empty", nameof(fsave));
+
+            string pdfFile = fopen;
+            string outputPath = fsave;
 
             token.ThrowIfCancellationRequested();
             progress?.Report(0.1);
 
-            string pdfFile = path;
-            string textFile = Path.ChangeExtension(pdfFile, ".txt");
-
-            var f = new SautinSoft.PdfFocus();
-            f.OpenPdf(pdfFile);
+            _pdfFocus = new SautinSoft.PdfFocus();
+            _pdfFocus.OpenPdf(pdfFile);
 
             token.ThrowIfCancellationRequested();
             progress?.Report(0.5);
 
-            if (f.PageCount > 0)
+            if (_pdfFocus.PageCount > 0)
             {
-                int result = f.ToText(textFile);
+                token.ThrowIfCancellationRequested();
+                int result = _pdfFocus.ToText(outputPath);
 
                 token.ThrowIfCancellationRequested();
                 progress?.Report(0.9);
 
                 if (result == 0)
                 {
-                    Logger.Instance.Info("PDF to TXT conversion completed successfully");
+                    MessageBox.Show("Conversion is Completed!");
                 }
-                else
+            }
+        }
+
+        public void Converter(string filepath, string savepath)
+        {
+            if (string.IsNullOrWhiteSpace(filepath))
+                throw new ArgumentException("Input path cannot be empty", nameof(filepath));
+            if (!File.Exists(filepath))
+                throw new FileNotFoundException("Input file not found", filepath);
+            if (string.IsNullOrWhiteSpace(savepath))
+                throw new ArgumentException("Output path cannot be empty", nameof(savepath));
+
+            string pdfFile = filepath;
+            string outputPath = savepath;
+
+            _pdfFocus = new SautinSoft.PdfFocus();
+            _pdfFocus.OpenPdf(pdfFile);
+
+            if (_pdfFocus.PageCount > 0)
+            {
+                int result = _pdfFocus.ToText(outputPath);
+
+                if (result == 0)
                 {
-                    Logger.Instance.Error($"PDF to TXT conversion failed with result: {result}", null);
+                    MessageBox.Show("Conversion is Completed!");
                 }
+            }
+        }
+
+        public void Dispose()
+        {
+            if (!_disposed)
+            {
+                if (_pdfFocus != null)
+                {
+                    _pdfFocus.Dispose();
+                }
+                _disposed = true;
             }
         }
     }
